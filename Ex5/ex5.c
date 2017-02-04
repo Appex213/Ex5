@@ -11,13 +11,13 @@ typedef struct {
 } Person;
 
 typedef struct {
-	Person* person;
+	Person** person;
 	int size;
 	int topIndex;
 } People;
 
 void InitTheHungerGames(People* people);
-void AddPerson(Person* person);
+void AddPerson(People* peopleptr);
 
 
 int main()
@@ -51,26 +51,29 @@ void InitTheHungerGames(People* people)
 
 void AddPerson(People* peopleptr)
 {
-	Person* person = peopleptr->person;
+	Person* newPerson = peopleptr->person[++peopleptr->topIndex];
 	char cBuff[80];
 	int iBuff, i;
 	printf("name:\n");
-	gets(cBuff);
-	person->name = (char*)malloc(strlen(cBuff) + 1);
+	scanf("%s", cBuff);
+	newPerson->name = (char*)malloc(strlen(cBuff));
+	if (newPerson->name == NULL)
+		exit(1);
+	strcpy(newPerson->name, cBuff);
 	printf("id:\n");
 	scanf("%d", &iBuff);
-	person->id = iBuff;
+	newPerson->id = iBuff;
 	printf("num of kids:\n");
 	scanf("%d", &iBuff);
 	if (iBuff > 0)
 	{
-		person->kids = (char**)malloc(iBuff * sizeof(char*));
+		newPerson->kids = (char**)malloc(iBuff * sizeof(char*));
 		for (i = 1;i < iBuff;i++)
 		{
 			printf("kid number %d name:\n", i);
 			gets(cBuff);
-			person->kids[i] = (char*)malloc(strlen(cBuff));
-			strcpy(person->kids[i], cBuff);
+			newPerson->kids[i] = (char*)malloc(strlen(cBuff));
+			strcpy(newPerson->kids[i], cBuff);
 		}
 	}
 
