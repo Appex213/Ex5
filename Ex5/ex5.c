@@ -8,50 +8,65 @@ typedef struct {
 	char* name;
 	char** kids;
 	int id;
+	struct Person* nextPerson;
 } Person;
 
-typedef struct {
-	Person** person;
-	int size;
-	int topIndex;
-} People;
 
-void InitTheHungerGames(People* people);
-void AddPerson(People* peopleptr);
+
+
+void InitTheHungerGames(Person* first);
+void AddPerson(Person* newPerson);
+void Print(Person* person);
+
 
 
 int main()
 {
-	People people;
-	Person person;
-	InitTheHungerGames(&people);
+	Person* firstPerson = NULL;
+	InitTheHungerGames(firstPerson);
+	LetTheHungerGamesBegin(firstPerson);
 
 	return 0;
 }
 
-void InitTheHungerGames(People* people)
+void InitTheHungerGames(Person* first)
 {
 	int choice;
-	Person* person = (Person*)malloc(10*sizeof(Person));
-	people->person = person;
-	people->size = 1;
-	people->topIndex = -1;
+
+	Person* head = first;
 	printf("Add a person to the game? 1 for yes, 0 for no\n");
 	scanf("%d", &choice);
+	if (!choice)
+		exit(0);
 	while (choice)
 	{
-		AddPerson(people);
+		Person* newPerson = (Person*)malloc(sizeof(Person));
+		if (newPerson == NULL)
+			exit(1);
+		AddPerson(newPerson);
+		if (head == NULL)
+		{
+			head = newPerson;
+			first = newPerson;
+			head->nextPerson = NULL;
+		}
+		else
+		{
+			head->nextPerson = newPerson;
+			head = newPerson;
+			head->nextPerson = NULL;
+		}
 		printf("Add a person to the game? 1 for yes, 0 for no\n");
 		scanf("%d", &choice);
+
 	}
+	Print(first);
 
-
-
+	return;
 }
 
-void AddPerson(People* peopleptr)
+void AddPerson(Person* newPerson)
 {
-	Person* newPerson = peopleptr->person[++peopleptr->topIndex];
 	char cBuff[80];
 	int iBuff, i;
 	printf("name:\n");
@@ -68,15 +83,15 @@ void AddPerson(People* peopleptr)
 	if (iBuff > 0)
 	{
 		newPerson->kids = (char**)malloc(iBuff * sizeof(char*));
-		for (i = 1;i < iBuff;i++)
+		for (i = 0;i < iBuff;i++)
 		{
-			printf("kid number %d name:\n", i);
-			gets(cBuff);
+			printf("kid number %d name:\n", i+1);
+			scanf("%s", cBuff);
 			newPerson->kids[i] = (char*)malloc(strlen(cBuff));
 			strcpy(newPerson->kids[i], cBuff);
 		}
+		newPerson->kids[iBuff] = NULL;
 	}
-
 	
 
 
@@ -84,8 +99,31 @@ void AddPerson(People* peopleptr)
 
 
 
-void LetTheHungerGamesBegin()
+
+void LetTheHungerGamesBegin(Person* first)
 {
+
 
 }
 
+void Print(Person* person)
+{
+	Person* firstPerson = person;
+
+	do
+	{
+		int i = 0;
+		printf("name: %s\n", person->name);
+		printf("id: %d\n", person->id);
+		if (person->kids != NULL)
+		{
+			while (person->kids[i] != NULL)
+			{
+				printf("kid %d: %s\n", i + 1, person->kids[i]);
+				i++;
+			}
+		}
+		person = person->nextPerson;
+
+	} while (person != NULL);
+}
