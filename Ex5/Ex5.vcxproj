@@ -18,6 +18,10 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ex5.c" />
+    <ClCompile Include="stack.c" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{22337104-9305-4E08-B5B9-B9A2C6DB4349}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -141,9 +145,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="ex5.c" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

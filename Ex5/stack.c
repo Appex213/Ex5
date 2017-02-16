@@ -1,9 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//change values here to change the type of the elements in the stack
-#define ELEMENT_FORMAT "%c" // "%c"/"%d"/"%f" ...
-typedef char Element;       // char/int/float ...
+typedef struct {
+    int number;
+    char one;
+    long bigNumber;
+    float numberWithDot;
+    double numberWithDotx2;
+    char lots[50];
+} Element;
+
 
 typedef struct {
     Element *content;
@@ -11,13 +17,49 @@ typedef struct {
     int topIndex;
 } Stack;
 
+int isFull(Stack* stackPtr);
+int isEmpty(Stack* stackPtr);
+int isHalfEmpty(Stack* stackPtr);
+
+void Print(Element* content)
+{
+    printf("\nint is:     %d\n", content->number);
+    printf("long is:    %ld\n", content->bigNumber);
+    printf("float is:   %f\n", content->numberWithDot);
+    printf("double is:  %lf\n", content->numberWithDotx2);
+    printf("char is:    %c\n", content->one);
+    printf("string is:  %s\n", content->lots);
+    printf(" --------\n ");
+}
+
+void Scan(Element* content)
+{
+    printf("Enter int:\n");
+    scanf("%d",&content->number);
+    printf("Enter long:\n");
+    scanf("%ld", &content->bigNumber);
+    printf("Enter float:\n");
+    scanf("%f", &content->numberWithDot);
+    printf("Enter double:\n");
+    scanf("%lf", &content->numberWithDotx2);
+    printf("Enter char:\n");
+    scanf("%c", &content->one);
+    /* I don't fully understand why this is necessary, but without it it just skips the char's scanf*/
+    scanf("%c", &content->one);
+    printf("Enter string: (len<50)\n");
+    scanf("%s", content->lots);
+    printf("\n\n");
+}
+
+
 void printStack(Stack* stackPtr) {
     int i;
     printf("Size of stack = %d, Size of content = %d\n", stackPtr->size, stackPtr->topIndex + 1);
-    printf("Content: ");
+    printf("Contents: ");
     for (i = 0; i <= stackPtr->topIndex; i++) {
-        printf(ELEMENT_FORMAT, stackPtr->content[i]);
-        printf(" ");
+        Element element = stackPtr->content[i];
+        printf("\n-->Element no. %d\n",i+1 );
+        Print(&element);
     }
     printf("\n\n");
 }
@@ -41,7 +83,7 @@ void destroy(Stack* stackPtr) {
 }
 
 void push(Stack* stackPtr, Element element) {
-    //Put information in array; update topIndex
+    /*Put information in array; update topIndex*/
     stackPtr->content[++stackPtr->topIndex] = element;
 
     if (isFull(stackPtr)) {
@@ -49,7 +91,7 @@ void push(Stack* stackPtr, Element element) {
         if (newContent == NULL) {
             free(stackPtr->content);
             printf("Push: Insufficient memory to realloc stack.\n");
-            exit(1);  // Exit, returning error code
+            exit(1);  /* Exit, returning error code */
         }
         stackPtr->content = newContent;
         stackPtr->size *= 2;
@@ -58,13 +100,14 @@ void push(Stack* stackPtr, Element element) {
 }
 
 Element pop(Stack *stackPtr) {
-    //note - before using pop, the user must check that the stack is not empty
+        Element returnVal;
+    /* note - before using pop, the user must check that the stack is not empty */
     if (isEmpty(stackPtr)) {
         printf("Can't pop Element from Stack: Stack is empty.\n");
-        exit(1);  // Exit, returning error code
+        exit(1);  /* Exit, returning error code */
     }
-    //Get information from the array; update topIndex
-    Element returnVal = stackPtr->content[stackPtr->topIndex--];
+    /* Get information from the array; update topIndex */
+    returnVal = stackPtr->content[stackPtr->topIndex--];
 
     if (isHalfEmpty(stackPtr)) {
         Element* newContent = (Element*) realloc(stackPtr->content,sizeof(Element) * stackPtr->size / 2);
@@ -81,10 +124,10 @@ Element pop(Stack *stackPtr) {
 }
 
 Element top(Stack *stackPtr) {
-    //note - before using top, the user must check that the stack is not empty
+    /* note - before using top, the user must check that the stack is not empty */
     if (isEmpty(stackPtr)) {
         printf("Can't top Element from Stack: Stack is empty.\n");
-        exit(1);  // Exit, returning error code
+        exit(1);  /* Exit, returning error code */
     }
     return stackPtr->content[stackPtr->topIndex];
 }
@@ -101,11 +144,12 @@ int isFull(Stack* stackPtr) {
     return stackPtr->topIndex >= stackPtr->size - 1;
 }
 
-int main(void) {
+int main() {
 
     int input;
     Element element;
     Stack stack;
+    Element temp;
 
     init(&stack);
     printf("Welcome to the elements stack!\n");
@@ -114,31 +158,35 @@ int main(void) {
         printf("Please choose option from the menu:\n\t1 : push\n\t2 : top\n\t3 : pop\n\t4 : print stack\n\tother : exit\n");
         scanf("%d",&input);
         switch (input) {
-            case 1: printf("Enter element to push: ");
-                    scanf(ELEMENT_FORMAT, &element);
+            case 1: printf("-->Enter element data to push: \n");
+                              Scan(&element);
                     push(&stack, element);
                     break;
             case 2: if (!isEmpty(&stack)) {
-                        printf("top\n");
-                        printf(ELEMENT_FORMAT, top(&stack));
+                        printf("-->top element is:\n");
+                        Print(&stack.content[stack.topIndex]);
                         printf("\n");
                     } else {
                         printf("can't top! stack is empty!\n");
                     }
                     break;
             case 3: if (!isEmpty(&stack)) {
-                        printf("pop\n");
-                        printf(ELEMENT_FORMAT, pop(&stack));
+                        printf("-->popped element is:\n");
+                        temp = pop(&stack);
+                        Print(&temp);
                         printf("\n");
                     } else {
                         printf("can't pop! stack is empty!\n");
                     }
                     break;
-            case 4: printStack(&stack);
+            case 4: if (!isEmpty(&stack)) {
+                    printStack(&stack);
+                    } else {
+                        printf("nothing to print! stack is empty!\n");
+                    }
         }
     } while (1 <= input && input <= 4);
 
     destroy(&stack);
     return 0;
 }
-
